@@ -10,14 +10,10 @@ import { AtGuard } from './common/guards';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        DATABASE_URL: Joi.string(),
-        AT_SECRET: Joi.string(),
-        RT_SECRET: Joi.string(),
+        DATABASE_URL: Joi.string().required(),
+        AT_SECRET: Joi.string().required(),
+        RT_SECRET: Joi.string().required(),
       }),
-      validationOptions: {
-        allowUnknown: false,
-        abortEarly: true,
-      },
     }),
     AuthModule,
     PrismaModule,
