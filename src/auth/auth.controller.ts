@@ -4,8 +4,10 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { RtGuard } from 'src/common/guards';
 import {
   GetCurrentUser,
@@ -14,7 +16,6 @@ import {
 } from 'src/common/decorators';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { Tokens } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -22,15 +23,25 @@ export class AuthController {
 
   @Public()
   @Post('local/signup')
-  signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
-    return this.authService.signupLocal(dto);
+  async signupLocal(
+    @Body() dto: AuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.signupLocal(dto);
+    this.authService.setCookies(res, tokens);
+    return tokens;
   }
 
   @Public()
   @Post('local/signin')
   @HttpCode(HttpStatus.OK)
-  signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
-    return this.authService.signinLocal(dto);
+  async signinLocal(
+    @Body() dto: AuthDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.authService.signinLocal(dto);
+    this.authService.setCookies(res, tokens);
+    return tokens;
   }
 
   @Post('logout')
